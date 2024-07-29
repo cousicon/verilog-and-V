@@ -1,0 +1,50 @@
+/*
+	This is a regfile that has 16 16 bit registers.  It take a write value from the alu output bus, has a clock signal,
+	a unique enable signal for each of the registers, and readA and readB that output to the a and b buses for the alu inputs.
+*/
+module regfile(Rdest, Rsrc, EnableRead, EnableWrite, A, B, write);
+					
+	input [3:0] Rdest, Rsrc;
+	input [15:0] write;
+	input EnableRead, EnableWrite;
+	
+	reg readRegEnable;
+	reg [15:0] readReg, writeReg [0:15];
+	
+	output reg[15:0] A, B;
+					
+	//Registers
+		register R0(.write(writeReg[0]), .EnableWrite(EnableWrite), .read(readReg[0]));
+		register R1(.write(writeReg[1]), .EnableWrite(EnableWrite), .read(readReg[1]));
+		register R2(.write(writeReg[2]), .EnableWrite(EnableWrite), .read(readReg[2]));
+		register R3(.write(writeReg[3]), .EnableWrite(EnableWrite), .read(readReg[3]));
+		register R4(.write(writeReg[4]), .EnableWrite(EnableWrite), .read(readReg[4]));
+		register R5(.write(writeReg[5]), .EnableWrite(EnableWrite), .read(readReg[5]));
+		register R6(.write(writeReg[6]), .EnableWrite(EnableWrite), .read(readReg[6]));
+		register R7(.write(writeReg[7]), .EnableWrite(EnableWrite), .read(readReg[7]));
+		register R8(.write(writeReg[8]), .EnableWrite(EnableWrite), .read(readReg[8]));
+		register R9(.write(writeReg[9]), .EnableWrite(EnableWrite), .read(readReg[9]));
+		register R10(.write(writeReg[10]), .EnableWrite(EnableWrite), .read(readReg[10]));
+		register R11(.write(writeReg[11]), .EnableWrite(EnableWrite), .read(readReg[11]));
+		register R12(.write(writeReg[12]), .EnableWrite(EnableWrite), .read(readReg[12]));
+		register R13(.write(writeReg[13]), .EnableWrite(EnableWrite), .read(readReg[13]));
+		register R14(.write(writeReg[14]), .EnableWrite(EnableWrite), .read(readReg[14]));
+		register R15(.write(writeReg[15]), .EnableWrite(EnableWrite), .read(readReg[15]));
+	
+	
+	always@(EnableRead, write)
+	begin
+		if(EnableRead)
+		begin
+			A = readReg[Rdest];
+			B = readReg[Rsrc];
+		end
+		
+		if(EnableWrite)
+		begin
+			writeReg[Rdest] = write;
+		end
+	end
+		
+	
+endmodule

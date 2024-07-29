@@ -1,0 +1,71 @@
+module CPU(clk, nextInstruction, rst, Flags, FullOp, aluOutput);
+
+	reg [15:0] data_a, data_b, imm;
+	reg [9:0] addr_a, addr_b, ProgramCounter;
+	output[9:0] nextInstruction;
+	reg we_a, we_b;
+	input clk, rst;
+	wire [15:0] q_a, q_b;
+	output [15:0] aluOutput, FullOp;
+	output wire [4:0] Flags;
+
+mem_lab mem
+(
+	.data_a(data_a),
+	.data_b(data_b),
+	.addr_a(ProgramCounter),
+	.addr_b(addr_b),
+	.we_a(we_a),
+	.we_b(we_b),
+	.clk(clk),
+	.q_a(FullOp),
+	.q_b(q_b)
+);
+
+FSM FM(
+	.rst(rst),
+	.clk(clk),
+	.FullOp(FullOp),
+	.imm(imm),
+	.aluOutput(aluOutput),
+	.Flags(Flags)
+);
+
+assign nextInstruction = ProgramCounter;
+
+always@(posedge clk)
+		begin
+			if(FullOp[15:12] == 0100 && FullOp[7:4] == 0000) //Load
+			begin
+				addr_b = FullOp[11:8];
+				we_b = 0;
+			end
+			else if(FullOp[15:12] == 0100 && FullOp[7:4] == 0100) //Store
+			begin
+				addr_b = FullOp[11:8];
+				we_b = 1;
+			end
+			else begin
+				we_a = 0;
+				we_b = 0;
+			end
+			
+			ProgramCounter = ProgramCounter + 1;
+			imm = 2;
+		end
+always@(aluOutput)
+		begin
+			if(FullOp[15:12] == 0100 && FullOp[7:4] == 0100) //Store
+			begin
+				data_b = aluOutput;
+			end
+		end
+always@(q_b)
+		begin
+			if(FullOp[15:12] == 0100 && FullOp[7:4] == 0000) //Load
+			begin
+				imm = q_b;
+			end
+		end
+endmodule
+

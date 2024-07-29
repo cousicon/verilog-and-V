@@ -1,0 +1,20 @@
+module register(write, writeEnable, read);
+
+	input [15:0] write;
+	input writeEnable;
+	output reg [15:0] read;
+	
+	reg [15:0] register;
+	
+	always @(*)
+	begin
+			read = register;
+	end
+
+	always @(writeEnable)
+	begin
+		if(writeEnable)
+			register = write;
+	end
+	
+endmodule
